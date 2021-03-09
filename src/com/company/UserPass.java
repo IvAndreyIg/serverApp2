@@ -32,7 +32,7 @@ public class UserPass implements Runnable {
     // конструктор, который принимает клиентский сокет и сервер
 
 
-    public void newConnnection(){
+    public void newConnnection(String login){
         int newPort=end+1;
         for (int p=start;start<end;p++){
             if(!connections.containsKey(p)){
@@ -48,7 +48,7 @@ public class UserPass implements Runnable {
             clientSocket = serverSocket.accept();
 
 
-            UserPort userPort=new UserPort(clientSocket,serverSocket);
+            UserPort userPort=new UserPort(clientSocket,serverSocket,login);
 
             new Thread(userPort).start();
 
@@ -115,7 +115,7 @@ public class UserPass implements Runnable {
                             boolean isCorrect = Main.DP.checkUser(login, pass);
                             if (isCorrect) {
                              //   outMessage.println("ok:" + "user is cor");
-                                newConnnection();
+                                newConnnection(login);
 
                                 try {
                                     clientSocket.close();

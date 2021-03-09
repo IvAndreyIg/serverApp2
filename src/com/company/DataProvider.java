@@ -71,35 +71,19 @@ public class DataProvider {
         return false;
 
     }
-    synchronized public boolean  newMessage(String text,String sender,String receiver){
+    synchronized public void  newMessage(String sender,String receiver,String text){
 
-        //INSERT INTO `goose`.`chat` (`Sender`, `Reciever`, `MessageText`) VALUES ('ander', 'gigi', 'text');
 
-        /*
-        ResultSet rs = null;
+
+
+// insert the data
         try {
-            rs = statement.executeQuery("SELECT * FROM UserPass WHERE User = '"+login+"'");
-
-
-
-            if ( rs.next() ) {
-                // String lastName = rs.getString("User");
-                String password = rs.getString("Password");
-                if (password.equals(pass))
-                    return true;
-                else
-                    return false;
-                //  System.out.println("name"+lastName);
-
-            }
-            else return false;
-
-
+            statement.executeUpdate("INSERT INTO `goose`.`chat` (`Sender`, `Reciever`, `MessageText`) VALUES ('"+sender+"', '"+receiver+"', '"+text+"')");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        *//* *//*
+        //INSERT INTO `goose`.`chat` (`Sender`, `Reciever`, `MessageText`) VALUES ('ander', 'gigi', 'text');
 
-*/return false;
+
     }
 }

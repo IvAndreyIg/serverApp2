@@ -12,10 +12,12 @@ public class UserPort implements Runnable   {
     private  Scanner in;
     private ServerSocket serverSocket;
     private Socket clientSocket;
+    private String login;
 
-    public UserPort(Socket clientSocket, ServerSocket serverSocket) {
+    public UserPort(Socket clientSocket, ServerSocket serverSocket,String login) {
         this.serverSocket=serverSocket;
         this.clientSocket=clientSocket;
+        this.login=login;
 
         try {
             this.out = new PrintWriter(clientSocket.getOutputStream(),true);
@@ -48,6 +50,17 @@ public class UserPort implements Runnable   {
                     String clientMessage = in.nextLine();
                     System.out.println("clientMessage"+clientMessage);
                     out.println("give chat ");
+
+                    if(clientMessage.contains("Message:")){
+
+                        Main.DP.newMessage(login,"All",clientMessage.substring(8));
+                    }
+
+
+
+                    //                    //
+
+
                 }
                 else {
                         System.out.println("NOPE");
