@@ -10,9 +10,9 @@ import java.util.Scanner;
 
 public class UserPass implements Runnable {
 
-    public static int start=49152;
+    private static int start=49152;
 
-    public static int end=start+1000;
+    private static int end=start+1000;
 
     public static HashSet<String> users = new HashSet<String>();
 
@@ -43,10 +43,16 @@ public class UserPass implements Runnable {
         try {
             ServerSocket serverSocket = new ServerSocket(newPort);
 
-            outMessage.println("port:" + "user is cor");
+            outMessage.println("port:" + newPort);
 
             clientSocket = serverSocket.accept();
 
+
+            UserPort userPort=new UserPort(clientSocket,serverSocket);
+
+            new Thread(userPort).start();
+
+            connections.put(newPort,userPort);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,8 +114,8 @@ public class UserPass implements Runnable {
                         }else{
                             boolean isCorrect = Main.DP.checkUser(login, pass);
                             if (isCorrect) {
-                                outMessage.println("ok:" + "user is cor");
-
+                             //   outMessage.println("ok:" + "user is cor");
+                                newConnnection();
 
                                 try {
                                     clientSocket.close();

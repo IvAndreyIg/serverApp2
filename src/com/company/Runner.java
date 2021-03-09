@@ -9,8 +9,6 @@ import java.util.Scanner;
 public class Runner implements Runnable {
     private ServerSocket serverSocket;
     private Socket socket;
-    private Scanner scanner;
-    private PrintWriter printWriter;
     private DataProvider DP;
 
 
