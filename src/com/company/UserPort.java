@@ -12,17 +12,21 @@ public class UserPort implements Runnable   {
     private  Scanner in;
     private ServerSocket serverSocket;
     private Socket clientSocket;
+    private String login;
 
-    public UserPort(Socket clientSocket, ServerSocket serverSocket) {
+    public UserPort(Socket clientSocket, ServerSocket serverSocket,
+            String login,PrintWriter out,Scanner in) {
+        
         this.serverSocket=serverSocket;
         this.clientSocket=clientSocket;
-
-        try {
-            this.out = new PrintWriter(clientSocket.getOutputStream(),true);
-            this.in = new Scanner(clientSocket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.login=login;
+        this.in=in;
+        this.out=out;
+            if (in.hasNext()) {
+                String clientMessage = in.nextLine();
+                System.out.println("clientMessage"+clientMessage);
+                }
+        
     }
 
 
@@ -34,36 +38,33 @@ public class UserPort implements Runnable   {
 
     @Override
     public void run() {
-        try {
+      //  try {
+            
             /*while (true) {
                 // сервер отправляет сообщение
                 server.sendMessageToAllClients("Новый участник вошёл в чат!");
                 server.sendMessageToAllClients("Клиентов в чате = " + clients_count);
                 break;
             }*/
-            int waiting=0;
+            
+            //out.println("History:"+"fseffsefefsefsef\nfseffef");
+             //System.out.println("clientShouldBe");
+         //    
             while (true) {
                 if (in.hasNext()) {
-
-                    String clientMessage = in.nextLine();
-                    System.out.println("clientMessage"+clientMessage);
-                    out.println("give chat ");
+                String clientMessage = in.nextLine();
+                System.out.println("clientMessage"+clientMessage);
+                
                 }
-                else {
-                        System.out.println("NOPE");
-                        waiting++;
-                        if(waiting>10)
-                            break;
-                    }
-                Thread.sleep(200);
-            }
-            System.out.println("EndCon");
+              }
+        /*    
+            //System.out.println("EndCon2");
         }
         catch (InterruptedException ex) {
             ex.printStackTrace();
         }
         finally {
             // this.close();
-        }
+        }*/
     }
 }

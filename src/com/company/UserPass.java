@@ -10,9 +10,9 @@ import java.util.Scanner;
 
 public class UserPass implements Runnable {
 
-    private static int start=49152;
+    private static int start=Integer.parseInt(Main.property.getProperty("users.port.start"));
 
-    private static int end=start+1000;
+    private static int end=start+Integer.parseInt(Main.property.getProperty("users.port.count"));
 
     public static HashSet<String> users = new HashSet<String>();
 
@@ -32,38 +32,109 @@ public class UserPass implements Runnable {
     // конструктор, который принимает клиентский сокет и сервер
 
 
-    public void newConnnection(){
-        int newPort=end+1;
-        for (int p=start;start<end;p++){
+    public boolean newConnnection(String login){
+        int newPort=0;
+        for (int p=start;p<end;p++){
             if(!connections.containsKey(p)){
                 newPort=p;
                 break;
             }
         }
+       // System.out.print("end:"+end);
+       //  System.out.print("new:"+newPort);
+        if(newPort==0)return false;
         try {
             ServerSocket serverSocket = new ServerSocket(newPort);
 
             outMessage.println("port:" + newPort);
-
+            
+            
+            
+            
             clientSocket = serverSocket.accept();
-
-
-            UserPort userPort=new UserPort(clientSocket,serverSocket);
-
-            new Thread(userPort).start();
-
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
+            Scanner in = new Scanner(clientSocket.getInputStream());
+            
+           UserPort userPort=new UserPort(clientSocket,serverSocket,login,out,in);
+            
+           //new Thread(userPort).start();
             connections.put(newPort,userPort);
+            users.add(login);
+            out.println("History:"+"dwdwdw");
+            int waiting=0;
+              while (true) {
+                if (in.hasNext()) {
+                String clientMessage = in.nextLine();
+              //  System.out.println("clientMessage"+clientMessage);
+                
+                if(clientMessage.contains("Message:")){
+                
+               // clientMessage.substring(8);
+                Main.DP.newMessage(login, "all", clientMessage.substring(8));
+                }
+                
+                if(clientMessage.contains("give:Online")){
+                
+                    String list="";
+                    
+                    
+                            
+                     for (String s : users) {
+                    list+=s+"]";
+                     }
+               // clientMessage.substring(8);
+               out.println("Online:"+list);
+                //Main.DP.newMessage(login, "all", clientMessage.substring(8));
+                }
+                
+                if(clientMessage.contains("give:History")){
+                     
+                     
+                   // System.out.println("Hist"+Main.DP.getChat());
+                    //System.out.println("Histot");
+                out.println("History:"+Main.DP.getChat());
+               // clientMessage.substring(8);
+              //  Main.DP.newMessage(login, "all", clientMessage.substring(8));
+                }
+                
+                
+                
+                
+                }else {
+                   // System.out.println("NOPEs3");
+                    waiting++;
+                    if(waiting>10)
+                    break;
+                }
+              }
+              clientSocket.close();
+              serverSocket.close();
+              users.remove(login);
+              connections.remove(newPort);
+          //  System.out.print("local"+clientSocket.getInetAddress());
+
+
+            
+           /* try{
+               Thread.sleep(500);  
+            }
+            catch(Exception e){}*/
+            
+           
+         //   
+
+            
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
+        return true;
     }
 
     public UserPass(Socket socket, Runner runner) {
 
-        users.add("admin2");
+        
 
         try {
             clients_count++;
@@ -87,7 +158,7 @@ public class UserPass implements Runnable {
             }*/
             int waiting=0;
             while (true) {
-                // Если от клиента пришло сообщение
+               
                 if (inMessage.hasNext()) {
                     String clientMessage = inMessage.nextLine();
 
@@ -115,14 +186,17 @@ public class UserPass implements Runnable {
                             boolean isCorrect = Main.DP.checkUser(login, pass);
                             if (isCorrect) {
                              //   outMessage.println("ok:" + "user is cor");
-                                newConnnection();
-
+                              //  newConnnection(login);
+                               if(newConnnection(login)){
                                 try {
                                     clientSocket.close();
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                break;
+                               break;}
+                               else{
+                                   outMessage.println("Error:" + "ports are busy");
+                               }
                             } else {
                                 outMessage.println("Error:" + "login or pass is fail");
                             }
@@ -150,10 +224,18 @@ public class UserPass implements Runnable {
                     // отправляем данное сообщение всем клиентам
                    // server.sendMessageToAllClients(clientMessage);
                 }else {
-                    System.out.println("NOPE");
+                   // System.out.println("NOPE");
                     waiting++;
-                    if(waiting>10)
+                    if(waiting>10){
+                        try{
+                            clientSocket.close();
+                        }catch(Exception e){
+                        }
+                        
                     break;
+                    
+                    }
+                    
                 }
 
                 // останавливаем выполнение потока на 100 мс
