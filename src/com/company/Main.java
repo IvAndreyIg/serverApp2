@@ -17,7 +17,7 @@ public class Main {
         FileInputStream fis = null;
          property = new Properties();
         try {
-            fis = new FileInputStream("src/javaapplication1/Server2/config.properties");
+            fis = new FileInputStream("src/com/company/config.properties");
             property.load(fis);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
